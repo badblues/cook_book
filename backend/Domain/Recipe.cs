@@ -1,6 +1,6 @@
 ﻿namespace CookBook.Domain;
 
-public class Recipie
+public class Recipe
 {
   string Name = "";
   string Base64Icon = "";
