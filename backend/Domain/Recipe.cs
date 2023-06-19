@@ -6,6 +6,6 @@ public class Recipe
     public string Name {get; set;} = "";
     public string Description {get; set;} = "";
     public string ImageBase64 {get; set;} = "";
-    public (string, string)[] StepsImageAndDescription {get;} = Array.Empty<(string, string)>();
+    public (string, string)[] StepsImageAndDescription {get; set;} = Array.Empty<(string, string)>();
 }
 
