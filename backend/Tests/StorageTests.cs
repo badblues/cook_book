@@ -1,6 +1,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using CookBook.RecipeStorage;
 using CookBook.Domain;
+using CookBook.Exceptions;
 using SixLabors.ImageSharp;
 using System.Text;
 
@@ -13,12 +14,12 @@ public class StorageTests
     private const string STORAGE_PATH = "../../../temporary_storage";
 
     [TestMethod]
-    public void Save_ValidInput_SavesImages()
+    public void Create_ValidInput_CreatesImages()
     {
-        Recipe recipe = LoadRecipe("recipe1", "description1", IMAGES_PATH);
+        Recipe recipe = CreateRecipe("recipe1", "description1", IMAGES_PATH);
         Storage storage = new Storage(STORAGE_PATH);
 
-        storage.Save(recipe);
+        storage.Create(recipe);
 
         Assert.IsTrue(File.Exists($"{STORAGE_PATH}/{recipe.Id}/recipe_image.jpg"));
         Assert.IsTrue(File.Exists($"{STORAGE_PATH}/{recipe.Id}/step1.jpg"));
@@ -27,12 +28,12 @@ public class StorageTests
     }
 
     [TestMethod]
-    public void Save_ValidInput_SavesRecipeTextContents()
+    public void Create_ValidInput_CreatesText()
     {
-        Recipe recipe = LoadRecipe("recipe1", "description1", IMAGES_PATH);
+        Recipe recipe = CreateRecipe("recipe1", "description1", IMAGES_PATH);
         Storage storage = new Storage(STORAGE_PATH);
 
-        storage.Save(recipe);
+        storage.Create(recipe);
 
         string filePath = $"{STORAGE_PATH}/{recipe.Id}/text.txt";
         Assert.IsTrue(File.Exists(filePath));
@@ -43,12 +44,22 @@ public class StorageTests
     }
 
     [TestMethod]
-    public void Get_ValidInput_LoadsText()
+    public void Create_EntryAlreadyExistss_ThrowsException()
     {
-        Recipe originalRecipe = LoadRecipe("recipe1", "description1", IMAGES_PATH);
+        Recipe recipe = CreateRecipe("recipe1", "description1", IMAGES_PATH);
         Storage storage = new Storage(STORAGE_PATH);
 
-        storage.Save(originalRecipe);
+        storage.Create(recipe);
+        Assert.ThrowsException<EntryAlreadyExists>(() => storage.Create(recipe));
+    }
+
+    [TestMethod]
+    public void Get_ValidInput_LoadsText()
+    {
+        Recipe originalRecipe = CreateRecipe("recipe1", "description1", IMAGES_PATH);
+        Storage storage = new Storage(STORAGE_PATH);
+
+        storage.Create(originalRecipe);
         Recipe loadedRecipe = storage.Get(originalRecipe.Id);
 
         Assert.AreEqual(originalRecipe.Name, loadedRecipe.Name);
@@ -71,10 +82,10 @@ public class StorageTests
     [TestMethod]
     public void Get_ValidInput_LoadsImages()
     {
-        Recipe originalRecipe = LoadRecipe("recipe1", "description1", IMAGES_PATH);
+        Recipe originalRecipe = CreateRecipe("recipe1", "description1", IMAGES_PATH);
         Storage storage = new Storage(STORAGE_PATH);
 
-        storage.Save(originalRecipe);
+        storage.Create(originalRecipe);
         Recipe loadedRecipe = storage.Get(originalRecipe.Id);
 
         Assert.IsTrue(loadedRecipe.MainImageBase64.Length > 0);
@@ -84,34 +95,63 @@ public class StorageTests
     }
 
     [TestMethod]
+    public void Get_EntryDoesntExist_ThrowsException() {
+        Storage storage = new Storage(STORAGE_PATH);
+        Guid id = new Guid();
+
+        Assert.ThrowsException<EntryNotFound>(() => storage.Get(id));
+    }
+
+    [TestMethod]
     public void Delete_ValidInput_RemovesDirectory()
     {
-        Recipe originalRecipe = LoadRecipe("recipe1", "description1", IMAGES_PATH);
+        Recipe originalRecipe = CreateRecipe("recipe1", "description1", IMAGES_PATH);
         Storage storage = new Storage(STORAGE_PATH);
 
-        storage.Save(originalRecipe);
+        storage.Create(originalRecipe);
         storage.Delete(originalRecipe.Id);
 
         Assert.IsFalse(Directory.Exists($"{STORAGE_PATH}/{originalRecipe.Id}"));
     }
 
     [TestMethod]
+    public void Delete_EntryDoesntExist_ThrowsException()
+    {
+        Storage storage = new Storage(STORAGE_PATH);
+        Guid id = new Guid();
+
+        Assert.ThrowsException<EntryNotFound>(() => storage.Delete(id));
+    }
+
+    [TestMethod]
     public void Update_ValidInput_ReplacesText()
     {
-        Recipe recipe = LoadRecipe("recipe1", "description1", IMAGES_PATH);
+        Recipe recipe = CreateRecipe("recipe1", "description1", IMAGES_PATH);
         Storage storage = new Storage(STORAGE_PATH);
 
-        storage.Save(recipe);
+        storage.Create(recipe);
         recipe.Name = "changed_name";
         recipe.Description = "changed_description";
-        storage.Update(recipe.Id, recipe);
+        storage.Update(recipe);
 
         string expectedText =
             "Name:changed_name\t\nDescription:changed_description\t\nStep1:step1\t\nStep2:step2\t\nStep3:step3\t\n";
         Assert.AreEqual(expectedText, LoadTextFileContents($"{STORAGE_PATH}/{recipe.Id}/text.txt"));
     }
 
-    private Recipe LoadRecipe(string name, string description, string directory)
+    [TestMethod]
+    public void Update_EntryDoesntExist_ThrowsException()
+    {
+        Recipe recipe = new Recipe()
+        {
+            Id = new Guid()
+        };
+        Storage storage = new Storage(STORAGE_PATH);
+
+        Assert.ThrowsException<EntryNotFound>(() => storage.Update(recipe));
+    }
+
+    private Recipe CreateRecipe(string name, string description, string directory)
     {
         List<(string, string)> recipeSteps = new List<(string, string)>();
         recipeSteps.Add((GetImageBase64String(directory + "/step1.jpg"), "step1"));

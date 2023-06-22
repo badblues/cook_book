@@ -1,4 +1,6 @@
 ﻿using CookBook.Domain;
+using CookBook.Exceptions;
+using System.Data.SqlTypes;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -17,28 +19,55 @@ public class Storage
         this.storagePath = storagePath;
     }
 
-    public void Save(Recipe recipe)
+    public void Create(Recipe recipe)
     {
-        //TODO: if folder with this guid exists should throw an exeption (probably)
-        //TODO: handle exeptions
-        string folderName = $"{storagePath}/{recipe.Id}";
+        string directory = $"{storagePath}/{recipe.Id}";
 
-        Directory.CreateDirectory(folderName);
-        using FileStream textFileStream = File.Create($"{folderName}/{RECIPE_TEXT_FILENAME}");
+        if (Directory.Exists(directory))
+            throw new EntryAlreadyExists();
+
+        Directory.CreateDirectory(directory);
+        SaveRecipeContents(directory, recipe);
+    }
+
+    public Recipe Get(Guid id)
+    {
+        string directory = $"{storagePath}/{id}";
+
+        if (!Directory.Exists(directory))
+            throw new EntryNotFound();
+
+        return LoadRecipe(id);
+    }
+
+    public void Update(Recipe recipe)
+    {
+        Delete(recipe.Id);
+        Create(recipe);
+    }
+
+    public void Delete(Guid id)
+    {
+        string directory = $"{storagePath}/{id}";
+        if (!Directory.Exists(directory))
+            throw new EntryNotFound();
+        Directory.Delete(directory, true);
+    }
+
+    private void SaveRecipeContents(string directory, Recipe recipe)
+    {
+        using FileStream textFileStream = File.Create($"{directory}/{RECIPE_TEXT_FILENAME}");
 
         SaveText(textFileStream, $"Name:{recipe.Name}\t\n");
         SaveText(textFileStream, $"Description:{recipe.Description}\t\n");
 
-        SaveImage(recipe.MainImageBase64, $"{folderName}/{MAIN_IMAGE_FILENAME}{IMAGES_FORMAT}");
+        SaveImage($"{directory}/{MAIN_IMAGE_FILENAME}{IMAGES_FORMAT}", recipe.MainImageBase64);
 
         int stepCounter = 1;
         foreach ((string, string) pair in recipe.StepsImageAndDescription)
         {
             SaveText(textFileStream, $"Step{stepCounter}:{pair.Item2}\t\n");
-            SaveImage(
-                pair.Item1,
-                $"{folderName}/{STEPS_IMAGES_PREFIX}{stepCounter}{IMAGES_FORMAT}"
-            );
+            SaveImage($"{directory}/{STEPS_IMAGES_PREFIX}{stepCounter}{IMAGES_FORMAT}", pair.Item1);
             stepCounter++;
         }
     }
@@ -49,51 +78,51 @@ public class Storage
         fileStream.Write(bytes, 0, bytes.Length);
     }
 
-    private void SaveImage(string base64, string imagePath)
+    private void SaveImage(string imagePath, string base64)
     {
         byte[] imageBytes = Convert.FromBase64String(base64);
         Image recipeIcon = Image.Load(imageBytes);
         recipeIcon.SaveAsJpeg(imagePath);
     }
 
-    public Recipe Get(Guid id)
+    private Recipe LoadRecipe(Guid id)
     {
-        //TODO: if folder with this guid doesn't exist should throw an exeption (probably)
-        //TODO: handle exeptions
         string directory = $"{storagePath}/{id}";
         string mainImagePath = $"{directory}/{MAIN_IMAGE_FILENAME}{IMAGES_FORMAT}";
-
-        List<(string, string)> recipeSteps = new List<(string, string)>();
-
-        string mainImage = LoadImageBase64String(mainImagePath);
         string recipeText = LoadTextFileContents($"{directory}/{RECIPE_TEXT_FILENAME}");
-        string name = GetSubstringMatchingRegex(recipeText, "Name:(.*)\t\n");
-        string description = GetSubstringMatchingRegex(recipeText, "Description:(.*)\t\n");
-
-        int stepCounter = 1;
-        string stepText = GetSubstringMatchingRegex(recipeText, $"Step{stepCounter}:(.*)\t\n");
-        string stepImage = LoadImageBase64String(
-            $"{directory}/{STEPS_IMAGES_PREFIX}{stepCounter}{IMAGES_FORMAT}"
-        );
-        while (stepText.Length > 0 && stepImage.Length > 0)
-        {
-            recipeSteps.Add((stepImage, stepText));
-            stepCounter++;
-            stepText = GetSubstringMatchingRegex(recipeText, $"Step{stepCounter}:(.*)\t\n");
-            stepImage = LoadImageBase64String(
-                $"{directory}/{STEPS_IMAGES_PREFIX}{stepCounter}{IMAGES_FORMAT}"
-            );
-        }
 
         Recipe recipe = new Recipe()
         {
             Id = id,
-            Name = name,
-            Description = description,
-            MainImageBase64 = mainImage,
-            StepsImageAndDescription = recipeSteps
+            Name = GetSubstringMatchingRegex(recipeText, "Name:(.*)\t\n"),
+            Description = GetSubstringMatchingRegex(recipeText, "Description:(.*)\t\n"),
+            MainImageBase64 = LoadImageBase64String(mainImagePath),
+            StepsImageAndDescription = LoadSteps(directory, recipeText)
         };
         return recipe;
+    }
+
+    private List<(string, string)> LoadSteps(string directory, string recipeText)
+    {
+        List<(string, string)> recipeSteps = new List<(string, string)>();
+        int stepCounter = 1;
+        (string, string) step = LoadStep(directory, recipeText, stepCounter);
+        while (step.Item1.Length > 0 && step.Item2.Length > 0)
+        {
+            recipeSteps.Add(step);
+            stepCounter++;
+            step = LoadStep(directory, recipeText, stepCounter);
+        }
+        return recipeSteps;
+    }
+
+    private (string, string) LoadStep(string directory, string recipeText, int stepNumber)
+    {
+        string stepImage = LoadImageBase64String(
+            $"{directory}/{STEPS_IMAGES_PREFIX}{stepNumber}{IMAGES_FORMAT}"
+        );
+        string stepText = GetSubstringMatchingRegex(recipeText, $"Step{stepNumber}:(.*)\t\n");
+        return (stepImage, stepText);
     }
 
     private string LoadTextFileContents(string filePath)
@@ -134,17 +163,5 @@ public class Storage
         {
             return "";
         }
-    }
-
-    public void Delete(Guid id)
-    {
-        Directory.Delete($"{storagePath}/{id}", true);
-    }
-
-    public void Update(Guid id, Recipe recipe)
-    {
-        //TODO: ids must be the same
-        Delete(id);
-        Save(recipe);
     }
 }
