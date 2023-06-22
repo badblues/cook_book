@@ -2,6 +2,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using CookBook.RecipeStorage;
 using CookBook.Domain;
 using SixLabors.ImageSharp;
+using System.Text;
 
 namespace CookBook.Tests;
 
@@ -10,45 +11,119 @@ public class StorageTests
 {
     private const string IMAGES_PATH = "../../../images";
     private const string STORAGE_PATH = "../../../temporary_storage";
-    private const string IMAGES_FORMAT = ".jpg";
-    private const string MAIN_IMAGE_FILENAME = "recipe_image";
-    private const string RECIPE_TEXT_FILENAME = "text.txt";
-    private const string STEPS_IMAGES_PREFIX = "step";
 
     [TestMethod]
-    public void Save_ValidInput_CreatesTextFile() {
+    public void Save_ValidInput_SavesImages()
+    {
         Recipe recipe = LoadRecipe("recipe1", "description1", IMAGES_PATH);
         Storage storage = new Storage(STORAGE_PATH);
 
         storage.Save(recipe);
-        
-        Assert.IsTrue(File.Exists($"{STORAGE_PATH}/{recipe.Id}/{RECIPE_TEXT_FILENAME}"));
+
+        Assert.IsTrue(File.Exists($"{STORAGE_PATH}/{recipe.Id}/recipe_image.jpg"));
+        Assert.IsTrue(File.Exists($"{STORAGE_PATH}/{recipe.Id}/step1.jpg"));
+        Assert.IsTrue(File.Exists($"{STORAGE_PATH}/{recipe.Id}/step2.jpg"));
+        Assert.IsTrue(File.Exists($"{STORAGE_PATH}/{recipe.Id}/step3.jpg"));
     }
 
     [TestMethod]
-    public void Save_ValidInput_CreatesMainImage() {
+    public void Save_ValidInput_SavesRecipeTextContents()
+    {
         Recipe recipe = LoadRecipe("recipe1", "description1", IMAGES_PATH);
         Storage storage = new Storage(STORAGE_PATH);
 
         storage.Save(recipe);
 
-        Assert.IsTrue(File.Exists($"{STORAGE_PATH}/{recipe.Id}/{MAIN_IMAGE_FILENAME}{IMAGES_FORMAT}"));
+        string filePath = $"{STORAGE_PATH}/{recipe.Id}/text.txt";
+        Assert.IsTrue(File.Exists(filePath));
+        string savedText = LoadTextFileContents(filePath);
+        string expectedText =
+            "Name:recipe1\t\nDescription:description1\t\nStep1:step1\t\nStep2:step2\t\nStep3:step3\t\n";
+        Assert.AreEqual(expectedText, savedText);
+    }
+
+    [TestMethod]
+    public void Get_ValidInput_LoadsText()
+    {
+        Recipe originalRecipe = LoadRecipe("recipe1", "description1", IMAGES_PATH);
+        Storage storage = new Storage(STORAGE_PATH);
+
+        storage.Save(originalRecipe);
+        Recipe loadedRecipe = storage.Get(originalRecipe.Id);
+
+        Assert.AreEqual(originalRecipe.Name, loadedRecipe.Name);
+        Assert.AreEqual(originalRecipe.Description, loadedRecipe.Description);
+        Assert.AreEqual(3, loadedRecipe.StepsImageAndDescription.Count);
+        Assert.AreEqual(
+            originalRecipe.StepsImageAndDescription[0].Item2,
+            loadedRecipe.StepsImageAndDescription[0].Item2
+        );
+        Assert.AreEqual(
+            originalRecipe.StepsImageAndDescription[1].Item2,
+            loadedRecipe.StepsImageAndDescription[1].Item2
+        );
+        Assert.AreEqual(
+            originalRecipe.StepsImageAndDescription[2].Item2,
+            loadedRecipe.StepsImageAndDescription[2].Item2
+        );
+    }
+
+    [TestMethod]
+    public void Get_ValidInput_LoadsImages()
+    {
+        Recipe originalRecipe = LoadRecipe("recipe1", "description1", IMAGES_PATH);
+        Storage storage = new Storage(STORAGE_PATH);
+
+        storage.Save(originalRecipe);
+        Recipe loadedRecipe = storage.Get(originalRecipe.Id);
+
+        Assert.IsTrue(loadedRecipe.MainImageBase64.Length > 0);
+        Assert.IsTrue(loadedRecipe.StepsImageAndDescription[0].Item1.Length > 0);
+        Assert.IsTrue(loadedRecipe.StepsImageAndDescription[1].Item1.Length > 0);
+        Assert.IsTrue(loadedRecipe.StepsImageAndDescription[2].Item1.Length > 0);
+    }
+
+    [TestMethod]
+    public void Delete_ValidInput_RemovesDirectory()
+    {
+        Recipe originalRecipe = LoadRecipe("recipe1", "description1", IMAGES_PATH);
+        Storage storage = new Storage(STORAGE_PATH);
+
+        storage.Save(originalRecipe);
+        storage.Delete(originalRecipe.Id);
+
+        Assert.IsFalse(Directory.Exists($"{STORAGE_PATH}/{originalRecipe.Id}"));
+    }
+
+    [TestMethod]
+    public void Update_ValidInput_ReplacesText()
+    {
+        Recipe recipe = LoadRecipe("recipe1", "description1", IMAGES_PATH);
+        Storage storage = new Storage(STORAGE_PATH);
+
+        storage.Save(recipe);
+        recipe.Name = "changed_name";
+        recipe.Description = "changed_description";
+        storage.Update(recipe.Id, recipe);
+
+        string expectedText =
+            "Name:changed_name\t\nDescription:changed_description\t\nStep1:step1\t\nStep2:step2\t\nStep3:step3\t\n";
+        Assert.AreEqual(expectedText, LoadTextFileContents($"{STORAGE_PATH}/{recipe.Id}/text.txt"));
     }
 
     private Recipe LoadRecipe(string name, string description, string directory)
     {
-        (string, string)[] recipeSteps = {
-            (GetImageBase64String(directory + "/step1.jpg"),"step1"),
-            (GetImageBase64String(directory + "/step2.jpg"),"step2"),
-            (GetImageBase64String(directory + "/step3.jpg"),"step3")
-        };
+        List<(string, string)> recipeSteps = new List<(string, string)>();
+        recipeSteps.Add((GetImageBase64String(directory + "/step1.jpg"), "step1"));
+        recipeSteps.Add((GetImageBase64String(directory + "/step2.jpg"), "step2"));
+        recipeSteps.Add((GetImageBase64String(directory + "/step3.jpg"), "step3"));
 
         Recipe recipe = new Recipe()
         {
             Id = Guid.NewGuid(),
             Name = name,
             Description = description,
-            ImageBase64 = GetImageBase64String(directory + "/recipe_image.jpg"),
+            MainImageBase64 = GetImageBase64String(directory + "/recipe_image.jpg"),
             StepsImageAndDescription = recipeSteps
         };
         return recipe;
@@ -60,6 +135,14 @@ public class StorageTests
         MemoryStream memoryStream = new MemoryStream();
         image.SaveAsJpeg(memoryStream);
         byte[] imageBytes = memoryStream.ToArray();
-        return(Convert.ToBase64String(imageBytes));
+        return Convert.ToBase64String(imageBytes);
+    }
+
+    private string LoadTextFileContents(string filePath)
+    {
+        using FileStream fileStream = File.OpenRead(filePath);
+        byte[] bytes = new byte[fileStream.Length];
+        fileStream.Read(bytes, 0, (int)fileStream.Length);
+        return Encoding.UTF8.GetString(bytes);
     }
 }
