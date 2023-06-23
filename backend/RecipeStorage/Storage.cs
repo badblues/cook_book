@@ -1,6 +1,5 @@
 ﻿using CookBook.Domain;
 using CookBook.Exceptions;
-using System.Data.SqlTypes;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -12,16 +11,16 @@ public class Storage
     private const string MAIN_IMAGE_FILENAME = "recipe_image";
     private const string RECIPE_TEXT_FILENAME = "text.txt";
     private const string STEPS_IMAGES_PREFIX = "step";
-    private readonly string storagePath = "";
+    private readonly string _storagePath = "";
 
-    public Storage(string storagePath)
+    public Storage(string _storagePath)
     {
-        this.storagePath = storagePath;
+        this._storagePath = _storagePath;
     }
 
     public void Create(Recipe recipe)
     {
-        string directory = $"{storagePath}/{recipe.Id}";
+        string directory = $"{_storagePath}/{recipe.Id}";
 
         if (Directory.Exists(directory))
             throw new EntryAlreadyExists();
@@ -32,12 +31,24 @@ public class Storage
 
     public Recipe Get(Guid id)
     {
-        string directory = $"{storagePath}/{id}";
+        string directory = $"{_storagePath}/{id}";
 
         if (!Directory.Exists(directory))
             throw new EntryNotFound();
 
         return LoadRecipe(id);
+    }
+
+    public IEnumerable<Recipe> GetAll()
+    {
+        IEnumerable<Recipe> recipes = new List<Recipe>();
+        IEnumerable<Guid> guids = GetGuids();
+        foreach (Guid id in guids)
+        {
+            Recipe recipe = Get(id);
+            recipes = recipes.Append(recipe);
+        }
+        return recipes;
     }
 
     public void Update(Recipe recipe)
@@ -48,7 +59,7 @@ public class Storage
 
     public void Delete(Guid id)
     {
-        string directory = $"{storagePath}/{id}";
+        string directory = $"{_storagePath}/{id}";
         if (!Directory.Exists(directory))
             throw new EntryNotFound();
         Directory.Delete(directory, true);
@@ -87,7 +98,7 @@ public class Storage
 
     private Recipe LoadRecipe(Guid id)
     {
-        string directory = $"{storagePath}/{id}";
+        string directory = $"{_storagePath}/{id}";
         string mainImagePath = $"{directory}/{MAIN_IMAGE_FILENAME}{IMAGES_FORMAT}";
         string recipeText = LoadTextFileContents($"{directory}/{RECIPE_TEXT_FILENAME}");
 
@@ -163,5 +174,21 @@ public class Storage
         {
             return "";
         }
+    }
+
+    private IEnumerable<Guid> GetGuids()
+    {
+        IEnumerable<Guid> guids = new List<Guid>();
+        string[] directories = Directory.GetDirectories(_storagePath);
+        foreach (string directory in directories)
+        {
+            string directoryName = GetSubstringMatchingRegex(
+                directory,
+                "/(.{8}-.{4}-.{4}-.{4}-.{12})$"
+            );
+            Guid id = Guid.Parse(directoryName);
+            guids = guids.Append(id);
+        }
+        return guids;
     }
 }

@@ -95,11 +95,25 @@ public class StorageTests
     }
 
     [TestMethod]
-    public void Get_EntryDoesntExist_ThrowsException() {
+    public void Get_EntryDoesntExist_ThrowsException()
+    {
         Storage storage = new Storage(STORAGE_PATH);
         Guid id = new Guid();
 
         Assert.ThrowsException<EntryNotFound>(() => storage.Get(id));
+    }
+
+    [TestMethod]
+    public void GetAll_ValidInput_LoadsTwoOrMoreRecipes() {
+        Recipe recipe1 = CreateRecipe("recipe1", "description1", IMAGES_PATH);
+        Recipe recipe2 = CreateRecipe("recipe2", "description2", IMAGES_PATH);
+        Storage storage = new Storage(STORAGE_PATH);
+
+        storage.Create(recipe1);
+        storage.Create(recipe2);
+
+        IEnumerable<Recipe> recipes = storage.GetAll();
+        Assert.IsTrue(recipes.Count() >= 2);
     }
 
     [TestMethod]
@@ -142,10 +156,7 @@ public class StorageTests
     [TestMethod]
     public void Update_EntryDoesntExist_ThrowsException()
     {
-        Recipe recipe = new Recipe()
-        {
-            Id = new Guid()
-        };
+        Recipe recipe = new Recipe() { Id = new Guid() };
         Storage storage = new Storage(STORAGE_PATH);
 
         Assert.ThrowsException<EntryNotFound>(() => storage.Update(recipe));
