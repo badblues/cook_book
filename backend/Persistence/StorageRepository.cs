@@ -13,16 +13,9 @@ public class StorageRepository : IRepository<Recipe>
         _storage = new Storage(storagePath);
     }
 
-    public Recipe? Get(Guid id)
+    public Recipe Get(Guid id)
     {
-        try
-        {
-            return _storage.Get(id);
-        }
-        catch(EntryNotFound)
-        {
-            return null;
-        }
+        return _storage.Get(id);
     }
 
     public IEnumerable<Recipe> GetAll()

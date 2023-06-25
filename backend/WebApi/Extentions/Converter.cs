@@ -7,7 +7,8 @@ public static class Converter
 {
     public static RecipeDto AsDto(this Recipe recipe)
     {
-        return new RecipeDto{
+        return new RecipeDto
+        {
             Id = recipe.Id,
             Name = recipe.Name,
             Description = recipe.Description,
@@ -18,8 +19,8 @@ public static class Converter
 
     public static Recipe AsRecipe(this InputRecipeDto inputRecipeDto)
     {
-        return new Recipe {
-            Id = Guid.NewGuid(),
+        return new Recipe
+        {
             Name = inputRecipeDto.Name,
             Description = inputRecipeDto.Description,
             MainImageBase64 = inputRecipeDto.MainImageBase64,

@@ -5,6 +5,7 @@ using CookBook.WebApi.Dtos;
 using CookBook.Persistence;
 using CookBook.Domain;
 using CookBook.WebApi.Extentions;
+using CookBook.Exceptions;
 
 [ApiController]
 [Route("recipes")]
@@ -27,44 +28,60 @@ public class RecipeController : ControllerBase
     [HttpGet("{id}")]
     public ActionResult<RecipeDto> GetRecipe(Guid id)
     {
-        Recipe? recipe = _repository.Get(id);
-        if (recipe is null)
+        try
+        {
+            Recipe recipe = _repository.Get(id);
+            return Ok(recipe.AsDto());
+        }
+        catch (EntryNotFound)
+        {
             return NotFound();
-        return Ok(recipe.AsDto());
+        }
     }
 
     [HttpPost]
     public ActionResult<RecipeDto> CreateRecipe(InputRecipeDto inputRecipeDto)
     {
-        Recipe recipe = inputRecipeDto.AsRecipe();
-        _repository.Create(recipe);
-        return Ok(recipe.AsDto());
+        try
+        {
+            Recipe recipe = inputRecipeDto.AsRecipe();
+            recipe.Id = Guid.NewGuid();
+            _repository.Create(recipe);
+            return Ok(recipe.AsDto());
+        }
+        catch (EntryAlreadyExists err)
+        {
+            return Conflict(err.Message);
+        }
     }
 
     [HttpPut("{id}")]
     public ActionResult UpdateRecipe(Guid id, InputRecipeDto inputRecipeDto)
     {
-        Recipe? existingRecipe = _repository.Get(id);
-        if (existingRecipe is null)
-            return NotFound();
-        Recipe updatedRecipe = existingRecipe with
+        try
         {
-            Name = inputRecipeDto.Name,
-            Description = inputRecipeDto.Description,
-            MainImageBase64 = inputRecipeDto.MainImageBase64,
-            StepsImagesAndDescriptions = inputRecipeDto.StepsImagesAndDescriptions
-        };
-        _repository.Update(updatedRecipe);
+            Recipe updatedRecipe = inputRecipeDto.AsRecipe();
+            updatedRecipe.Id = id;
+            _repository.Update(updatedRecipe);
+        }
+        catch (EntryNotFound)
+        {
+            return NotFound();
+        }
         return Ok();
     }
 
     [HttpDelete("{id}")]
     public ActionResult DeleteRecipe(Guid id)
     {
-        if (_repository.Get(id) is null)
+        try
+        {
+            _repository.Delete(id);
+        }
+        catch (EntryNotFound)
+        {
             return NotFound();
-        _repository.Delete(id);
+        }
         return Ok();
     }
-
 }
