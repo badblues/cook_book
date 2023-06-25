@@ -9,11 +9,10 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-//TODO must be a better way of doing this
 string? storagePath =
     builder.Configuration.GetSection("Storage:StoragePath").Value
-    ?? throw new NullReferenceException();
-builder.Services.AddScoped<IRepository<Recipe>>(provider => 
+    ?? throw new NullReferenceException("Storage path isn't configured");
+builder.Services.AddScoped<IRepository<Recipe>>(provider =>
 {
     return new StorageRepository(storagePath);
 });
