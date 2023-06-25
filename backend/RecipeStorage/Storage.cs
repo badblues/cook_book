@@ -75,7 +75,7 @@ public class Storage
         SaveImage($"{directory}/{MAIN_IMAGE_FILENAME}{IMAGES_FORMAT}", recipe.MainImageBase64);
 
         int stepCounter = 1;
-        foreach ((string, string) pair in recipe.StepsImageAndDescription)
+        foreach ((string, string) pair in recipe.StepsImagesAndDescriptions)
         {
             SaveText(textFileStream, $"Step{stepCounter}:{pair.Item2}\t\n");
             SaveImage($"{directory}/{STEPS_IMAGES_PREFIX}{stepCounter}{IMAGES_FORMAT}", pair.Item1);
@@ -83,9 +83,9 @@ public class Storage
         }
     }
 
-    private void SaveText(FileStream fileStream, string value)
+    private void SaveText(FileStream fileStream, string text)
     {
-        byte[] bytes = new UTF8Encoding(true).GetBytes(value);
+        byte[] bytes = new UTF8Encoding(true).GetBytes(text);
         fileStream.Write(bytes, 0, bytes.Length);
     }
 
@@ -108,7 +108,7 @@ public class Storage
             Name = GetSubstringMatchingRegex(recipeText, "Name:(.*)\t\n"),
             Description = GetSubstringMatchingRegex(recipeText, "Description:(.*)\t\n"),
             MainImageBase64 = LoadImageBase64String(mainImagePath),
-            StepsImageAndDescription = LoadSteps(directory, recipeText)
+            StepsImagesAndDescriptions = LoadSteps(directory, recipeText)
         };
         return recipe;
     }

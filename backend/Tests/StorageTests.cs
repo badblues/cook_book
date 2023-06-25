@@ -64,18 +64,18 @@ public class StorageTests
 
         Assert.AreEqual(originalRecipe.Name, loadedRecipe.Name);
         Assert.AreEqual(originalRecipe.Description, loadedRecipe.Description);
-        Assert.AreEqual(3, loadedRecipe.StepsImageAndDescription.Count);
+        Assert.AreEqual(3, loadedRecipe.StepsImagesAndDescriptions.Count);
         Assert.AreEqual(
-            originalRecipe.StepsImageAndDescription[0].Item2,
-            loadedRecipe.StepsImageAndDescription[0].Item2
+            originalRecipe.StepsImagesAndDescriptions[0].Item2,
+            loadedRecipe.StepsImagesAndDescriptions[0].Item2
         );
         Assert.AreEqual(
-            originalRecipe.StepsImageAndDescription[1].Item2,
-            loadedRecipe.StepsImageAndDescription[1].Item2
+            originalRecipe.StepsImagesAndDescriptions[1].Item2,
+            loadedRecipe.StepsImagesAndDescriptions[1].Item2
         );
         Assert.AreEqual(
-            originalRecipe.StepsImageAndDescription[2].Item2,
-            loadedRecipe.StepsImageAndDescription[2].Item2
+            originalRecipe.StepsImagesAndDescriptions[2].Item2,
+            loadedRecipe.StepsImagesAndDescriptions[2].Item2
         );
     }
 
@@ -89,9 +89,9 @@ public class StorageTests
         Recipe loadedRecipe = storage.Get(originalRecipe.Id);
 
         Assert.IsTrue(loadedRecipe.MainImageBase64.Length > 0);
-        Assert.IsTrue(loadedRecipe.StepsImageAndDescription[0].Item1.Length > 0);
-        Assert.IsTrue(loadedRecipe.StepsImageAndDescription[1].Item1.Length > 0);
-        Assert.IsTrue(loadedRecipe.StepsImageAndDescription[2].Item1.Length > 0);
+        Assert.IsTrue(loadedRecipe.StepsImagesAndDescriptions[0].Item1.Length > 0);
+        Assert.IsTrue(loadedRecipe.StepsImagesAndDescriptions[1].Item1.Length > 0);
+        Assert.IsTrue(loadedRecipe.StepsImagesAndDescriptions[2].Item1.Length > 0);
     }
 
     [TestMethod]
@@ -175,7 +175,7 @@ public class StorageTests
             Name = name,
             Description = description,
             MainImageBase64 = GetImageBase64String(directory + "/recipe_image.jpg"),
-            StepsImageAndDescription = recipeSteps
+            StepsImagesAndDescriptions = recipeSteps
         };
         return recipe;
     }
