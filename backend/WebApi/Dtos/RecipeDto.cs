@@ -11,8 +11,8 @@ public record RecipeDto
     [Required]
     public string Description {get; set;} = "";
     [Required]
-    public string MainImageBase64 {get; set;} = "";
+    public string MainImagePath {get; set;} = "";
     [Required]
-    public List<(string, string)> StepsImagesAndDescriptions {get; set;} = new List<(string, string)>();
+    public List<(string, string)> StepsImagePathsAndDescriptions {get; set;} = new List<(string, string)>();
 }
 

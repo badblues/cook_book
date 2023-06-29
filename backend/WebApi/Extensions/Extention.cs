@@ -1,21 +1,10 @@
-namespace CookBook.WebApi.Extentions;
+namespace CookBook.WebApi.Extensions;
 
 using CookBook.Domain;
 using CookBook.WebApi.Dtos;
 
-public static class Converter
+public static class Extension
 {
-    public static RecipeDto AsDto(this Recipe recipe)
-    {
-        return new RecipeDto
-        {
-            Id = recipe.Id,
-            Name = recipe.Name,
-            Description = recipe.Description,
-            MainImageBase64 = recipe.MainImageBase64,
-            StepsImagesAndDescriptions = recipe.StepsImagesAndDescriptions
-        };
-    }
 
     public static Recipe AsRecipe(this InputRecipeDto inputRecipeDto)
     {

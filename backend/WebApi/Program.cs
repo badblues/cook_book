@@ -1,5 +1,7 @@
 using CookBook.Domain;
 using CookBook.Persistence;
+using CookBook.WebApi.Extensions;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +18,7 @@ builder.Services.AddScoped<IRepository<Recipe>>(provider =>
 {
     return new StorageRepository(storagePath);
 });
+builder.Services.AddScoped<RecipeConverter>(provider => new RecipeConverter(storagePath));
 
 var app = builder.Build();
 

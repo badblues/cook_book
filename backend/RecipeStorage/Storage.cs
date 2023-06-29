@@ -7,10 +7,10 @@ namespace CookBook.RecipeStorage;
 
 public class Storage
 {
-    private const string IMAGES_FORMAT = ".jpg";
-    private const string MAIN_IMAGE_FILENAME = "recipe_image";
-    private const string RECIPE_TEXT_FILENAME = "text.txt";
-    private const string STEPS_IMAGES_PREFIX = "step";
+    public const string IMAGES_FORMAT = ".jpg";
+    public const string MAIN_IMAGE_FILENAME = "recipe_image";
+    public const string RECIPE_TEXT_FILENAME = "text.txt";
+    public const string STEPS_IMAGES_PREFIX = "step";
     private readonly string _storagePath = "";
 
     public Storage(string _storagePath)

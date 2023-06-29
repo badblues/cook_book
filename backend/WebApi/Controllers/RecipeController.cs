@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using CookBook.WebApi.Dtos;
 using CookBook.Persistence;
 using CookBook.Domain;
-using CookBook.WebApi.Extentions;
+using CookBook.WebApi.Extensions;
 using CookBook.Exceptions;
 
 [ApiController]
@@ -12,17 +12,19 @@ using CookBook.Exceptions;
 public class RecipeController : ControllerBase
 {
     private IRepository<Recipe> _repository;
+    private RecipeConverter _converter;
 
-    public RecipeController(IRepository<Recipe> repository)
+    public RecipeController(IRepository<Recipe> repository, RecipeConverter converter)
     {
         this._repository = repository;
+        this._converter = converter;
     }
-
+    
     [HttpGet]
     public ActionResult<IEnumerable<RecipeDto>> GetRecipes()
     {
         IEnumerable<Recipe> recipes = _repository.GetAll();
-        return Ok(recipes.Select(recipe => recipe.AsDto()));
+        return Ok(recipes.Select(recipe => _converter.ConvertImagesToUrls(recipe)));
     }
 
     [HttpGet("{id}")]
@@ -31,7 +33,7 @@ public class RecipeController : ControllerBase
         try
         {
             Recipe recipe = _repository.Get(id);
-            return Ok(recipe.AsDto());
+            return Ok(_converter.ConvertImagesToUrls(recipe));
         }
         catch (EntryNotFound)
         {
@@ -47,7 +49,7 @@ public class RecipeController : ControllerBase
             Recipe recipe = inputRecipeDto.AsRecipe();
             recipe.Id = Guid.NewGuid();
             _repository.Create(recipe);
-            return Ok(recipe.AsDto());
+            return Ok(_converter.ConvertImagesToUrls(recipe));
         }
         catch (EntryAlreadyExists err)
         {
