@@ -1,0 +1,16 @@
+<form class="flex flex-col bg-blue-200 flex flex-col h-fit items-center" (ngSubmit)="onSubmit()">
+    <div >
+      <label for="text">Name:</label>
+      <input type="text" name="name" [(ngModel)]="name" placeholder="name">
+    </div>
+    <div>
+      <label for="text">Description:</label>
+      <input type="text" name="description" [(ngModel)]="description" placeholder="description">
+    </div>
+      <input type="file" accept="image/*" (change)="onMainImageSelected($event)">
+      <div *ngFor="let index of getCountArray(stepInputs)">
+        <input type="file" accept="image/*"  (change)="onStepImageSelected($event, index)">
+        <input type="text" name="stepText" (change)="onStepTextChanged($event, index)" placeholder="step # {{index + 1}}">
+      </div>
+    <input type="submit" value="UPLOAD">
+</form>

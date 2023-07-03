@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { Recipe } from 'src/app/models/recipe';
+import { RecipeView } from 'src/app/models/Recipe';
 
 @Component({
   selector: 'app-recipe-item',
@@ -10,5 +10,5 @@ export class RecipeItemComponent {
 
   apiUrl: string = "http://localhost:5055/images/";
 
-  @Input() recipe!: Recipe;
+  @Input() recipe!: RecipeView;
 }
