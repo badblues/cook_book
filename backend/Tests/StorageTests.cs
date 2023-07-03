@@ -44,13 +44,23 @@ public class StorageTests
     }
 
     [TestMethod]
-    public void Create_EntryAlreadyExistss_ThrowsException()
+    public void Create_EntryAlreadyExists_ThrowsException()
     {
         Recipe recipe = CreateRecipe("recipe1", "description1", IMAGES_PATH);
         Storage storage = new Storage(STORAGE_PATH);
 
         storage.Create(recipe);
         Assert.ThrowsException<EntryAlreadyExists>(() => storage.Create(recipe));
+    }
+
+    [TestMethod]
+    public void Create_ArraysLengthsDontMatch_ThrowsException()
+    {
+        Recipe recipe = CreateRecipe("recipe1", "description1", IMAGES_PATH);
+        recipe.StepsTexts.Add("qwe");
+        Storage storage = new Storage(STORAGE_PATH);
+
+        Assert.ThrowsException<ArrayLengthsDontMatch>(() => storage.Create(recipe));
     }
 
     [TestMethod]
@@ -64,19 +74,10 @@ public class StorageTests
 
         Assert.AreEqual(originalRecipe.Name, loadedRecipe.Name);
         Assert.AreEqual(originalRecipe.Description, loadedRecipe.Description);
-        Assert.AreEqual(3, loadedRecipe.StepsImagesAndDescriptions.Count);
-        Assert.AreEqual(
-            originalRecipe.StepsImagesAndDescriptions[0].Item2,
-            loadedRecipe.StepsImagesAndDescriptions[0].Item2
-        );
-        Assert.AreEqual(
-            originalRecipe.StepsImagesAndDescriptions[1].Item2,
-            loadedRecipe.StepsImagesAndDescriptions[1].Item2
-        );
-        Assert.AreEqual(
-            originalRecipe.StepsImagesAndDescriptions[2].Item2,
-            loadedRecipe.StepsImagesAndDescriptions[2].Item2
-        );
+        Assert.AreEqual(3, loadedRecipe.StepsTexts.Count);
+        Assert.AreEqual(originalRecipe.StepsTexts[0], loadedRecipe.StepsTexts[0]);
+        Assert.AreEqual(originalRecipe.StepsTexts[1], loadedRecipe.StepsTexts[1]);
+        Assert.AreEqual(originalRecipe.StepsTexts[2], loadedRecipe.StepsTexts[2]);
     }
 
     [TestMethod]
@@ -89,9 +90,9 @@ public class StorageTests
         Recipe loadedRecipe = storage.Get(originalRecipe.Id);
 
         Assert.IsTrue(loadedRecipe.MainImageBase64.Length > 0);
-        Assert.IsTrue(loadedRecipe.StepsImagesAndDescriptions[0].Item1.Length > 0);
-        Assert.IsTrue(loadedRecipe.StepsImagesAndDescriptions[1].Item1.Length > 0);
-        Assert.IsTrue(loadedRecipe.StepsImagesAndDescriptions[2].Item1.Length > 0);
+        Assert.IsTrue(loadedRecipe.StepsImagesBase64[0].Length > 0);
+        Assert.IsTrue(loadedRecipe.StepsImagesBase64[1].Length > 0);
+        Assert.IsTrue(loadedRecipe.StepsImagesBase64[2].Length > 0);
     }
 
     [TestMethod]
@@ -104,7 +105,8 @@ public class StorageTests
     }
 
     [TestMethod]
-    public void GetAll_ValidInput_LoadsTwoOrMoreRecipes() {
+    public void GetAll_ValidInput_LoadsTwoOrMoreRecipes()
+    {
         Recipe recipe1 = CreateRecipe("recipe1", "description1", IMAGES_PATH);
         Recipe recipe2 = CreateRecipe("recipe2", "description2", IMAGES_PATH);
         Storage storage = new Storage(STORAGE_PATH);
@@ -164,10 +166,11 @@ public class StorageTests
 
     private Recipe CreateRecipe(string name, string description, string directory)
     {
-        List<(string, string)> recipeSteps = new List<(string, string)>();
-        recipeSteps.Add((GetImageBase64String(directory + "/step1.jpg"), "step1"));
-        recipeSteps.Add((GetImageBase64String(directory + "/step2.jpg"), "step2"));
-        recipeSteps.Add((GetImageBase64String(directory + "/step3.jpg"), "step3"));
+        List<string> stepsImagesBase64 = new List<string>();
+        stepsImagesBase64.Add(GetImageBase64String(directory + "/step1.jpg"));
+        stepsImagesBase64.Add(GetImageBase64String(directory + "/step2.jpg"));
+        stepsImagesBase64.Add(GetImageBase64String(directory + "/step3.jpg"));
+        List<string> stepsTexts = new List<string>() { "step1", "step2", "step3" };
 
         Recipe recipe = new Recipe()
         {
@@ -175,7 +178,8 @@ public class StorageTests
             Name = name,
             Description = description,
             MainImageBase64 = GetImageBase64String(directory + "/recipe_image.jpg"),
-            StepsImagesAndDescriptions = recipeSteps
+            StepsImagesBase64 = stepsImagesBase64,
+            StepsTexts = stepsTexts
         };
         return recipe;
     }

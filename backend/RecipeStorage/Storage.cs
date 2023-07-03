@@ -20,6 +20,9 @@ public class Storage
 
     public void Create(Recipe recipe)
     {
+        if (recipe.StepsImagesBase64.Count != recipe.StepsTexts.Count)
+            throw new ArrayLengthsDontMatch();
+
         string directory = $"{_storagePath}/{recipe.Id}";
 
         if (Directory.Exists(directory))
@@ -74,12 +77,13 @@ public class Storage
 
         SaveImage($"{directory}/{MAIN_IMAGE_FILENAME}{IMAGES_FORMAT}", recipe.MainImageBase64);
 
-        int stepCounter = 1;
-        foreach ((string, string) pair in recipe.StepsImagesAndDescriptions)
+        for (int i = 0; i < recipe.StepsImagesBase64.Count; i++)
         {
-            SaveText(textFileStream, $"Step{stepCounter}:{pair.Item2}\t\n");
-            SaveImage($"{directory}/{STEPS_IMAGES_PREFIX}{stepCounter}{IMAGES_FORMAT}", pair.Item1);
-            stepCounter++;
+            SaveText(textFileStream, $"Step{i + 1}:{recipe.StepsTexts[i]}\t\n");
+            SaveImage(
+                $"{directory}/{STEPS_IMAGES_PREFIX}{i + 1}{IMAGES_FORMAT}",
+                recipe.StepsImagesBase64[i]
+            );
         }
     }
 
@@ -108,32 +112,52 @@ public class Storage
             Name = GetSubstringMatchingRegex(recipeText, "Name:(.*)\t\n"),
             Description = GetSubstringMatchingRegex(recipeText, "Description:(.*)\t\n"),
             MainImageBase64 = LoadImageBase64String(mainImagePath),
-            StepsImagesAndDescriptions = LoadSteps(directory, recipeText)
+            StepsImagesBase64 = LoadStepsImagesBase64(directory),
+            StepsTexts = LoadStepsTexts(recipeText)
         };
         return recipe;
     }
 
-    private List<(string, string)> LoadSteps(string directory, string recipeText)
+    private List<string> LoadStepsImagesBase64(string directory)
     {
-        List<(string, string)> recipeSteps = new List<(string, string)>();
+        List<string> recipeImages = new List<string>();
         int stepCounter = 1;
-        (string, string) step = LoadStep(directory, recipeText, stepCounter);
-        while (step.Item1.Length > 0 && step.Item2.Length > 0)
+        string step = LoadStepImage(directory, stepCounter);
+        while (step.Length > 0)
         {
-            recipeSteps.Add(step);
+            recipeImages.Add(step);
             stepCounter++;
-            step = LoadStep(directory, recipeText, stepCounter);
+            step = LoadStepImage(directory, stepCounter);
         }
-        return recipeSteps;
+        return recipeImages;
     }
 
-    private (string, string) LoadStep(string directory, string recipeText, int stepNumber)
+    private List<string> LoadStepsTexts(string recipeText)
+    {
+        List<string> recipeTexts = new List<string>();
+        int stepCounter = 1;
+        string step = LoadStepText(recipeText, stepCounter);
+        while (step.Length > 0)
+        {
+            recipeTexts.Add(step);
+            stepCounter++;
+            step = LoadStepText(recipeText, stepCounter);
+        }
+        return recipeTexts;
+    }
+
+    private string LoadStepImage(string directory, int stepNumber)
     {
         string stepImage = LoadImageBase64String(
             $"{directory}/{STEPS_IMAGES_PREFIX}{stepNumber}{IMAGES_FORMAT}"
         );
+        return stepImage;
+    }
+
+    private string LoadStepText(string recipeText, int stepNumber)
+    {
         string stepText = GetSubstringMatchingRegex(recipeText, $"Step{stepNumber}:(.*)\t\n");
-        return (stepImage, stepText);
+        return stepText;
     }
 
     private string LoadTextFileContents(string filePath)

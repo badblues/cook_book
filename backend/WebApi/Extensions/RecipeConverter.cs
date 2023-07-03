@@ -15,13 +15,12 @@ public class RecipeConverter
 
     public RecipeDto ConvertImagesToUrls(Recipe recipe)
     {
-        List<(string, string)> urlsAndDescriptions = new List<(string, string)>();
-        int counter = 1;
-        foreach ((string, string) pair in recipe.StepsImagesAndDescriptions)
+        List<string> imagePaths = new List<string>();
+        for (int i = 0; i < recipe.StepsImagesBase64.Count; i++)
         {
-            string imageUrl =
-                $"{_storagePath}/{recipe.Id}/{Storage.STEPS_IMAGES_PREFIX}{counter++}{Storage.IMAGES_FORMAT}";
-            urlsAndDescriptions.Add((imageUrl, pair.Item2));
+            string imagePath =
+                $"{_storagePath}/{recipe.Id}/{Storage.STEPS_IMAGES_PREFIX}{i + 1}{Storage.IMAGES_FORMAT}";
+            imagePaths.Add(imagePath);
         }
         return new RecipeDto()
         {
@@ -30,7 +29,8 @@ public class RecipeConverter
             Description = recipe.Description,
             MainImagePath =
                 $"{_storagePath}/{recipe.Id}/{Storage.MAIN_IMAGE_FILENAME}{Storage.IMAGES_FORMAT}",
-            StepsImagePathsAndDescriptions = urlsAndDescriptions
+            StepsImagesBase64 = imagePaths,
+            StepsTexts = recipe.StepsTexts
         };
     }
 }

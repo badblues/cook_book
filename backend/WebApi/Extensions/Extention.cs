@@ -13,7 +13,8 @@ public static class Extension
             Name = inputRecipeDto.Name,
             Description = inputRecipeDto.Description,
             MainImageBase64 = inputRecipeDto.MainImageBase64,
-            StepsImagesAndDescriptions = inputRecipeDto.StepsImagesAndDescriptions
+            StepsImagesBase64 = inputRecipeDto.StepsImagesBase64,
+            StepsTexts = inputRecipeDto.StepsTexts
         };
     }
 }
