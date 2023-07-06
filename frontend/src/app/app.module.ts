@@ -14,11 +14,6 @@ import { RecipeItemComponent } from './components/recipe-item/recipe-item.compon
 import { RecipeContainerComponent } from './components/recipe-container/recipe-container.component';
 import { InputRecipePageComponent } from './components/input-recipe-page/input-recipe-page.component';
 
-const appRoutes: Routes = [
-  {path: '', component: MainPageComponent},
-  {path: 'input-recipe', component: InputRecipePageComponent},
-]
-
 @NgModule({
   declarations: [
     AppComponent,
@@ -28,16 +23,15 @@ const appRoutes: Routes = [
     RecipePageComponent,
     RecipeItemComponent,
     RecipeContainerComponent,
-    InputRecipePageComponent
+    InputRecipePageComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    RouterModule.forRoot(appRoutes),
     HttpClientModule,
     FormsModule,
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

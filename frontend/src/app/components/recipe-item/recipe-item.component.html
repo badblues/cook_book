@@ -1,4 +1,4 @@
-<div class="bg-red-200 flex-col">
+<div class="bg-red-200 flex-col" (click)="navigateToRecipePage()">
   <label class="">{{recipe.name}}</label>
   <img class="w-full" src="{{this.apiUrl+recipe.mainImagePath}}" alt="Image">
   <br>

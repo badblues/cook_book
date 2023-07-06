@@ -555,10 +555,6 @@ video {
   flex-direction: column;
 }
 
-.content-center {
-  align-content: center;
-}
-
 .items-center {
   align-items: center;
 }
@@ -593,10 +589,6 @@ video {
 .text-3xl {
   font-size: 1.875rem;
   line-height: 2.25rem;
-}
-
-.outline-black {
-  outline-color: #000;
 }
 
 * {
