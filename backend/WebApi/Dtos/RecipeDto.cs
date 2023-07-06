@@ -13,7 +13,7 @@ public record RecipeDto
     [Required]
     public string MainImagePath {get; set;} = "";
     [Required]
-    public List<string> StepsImagesBase64 { get; set; } = new List<string>();
+    public List<string> StepsImagesPaths { get; set; } = new List<string>();
     [Required]
     public List<string> StepsTexts { get; set; } = new List<string>();
 }

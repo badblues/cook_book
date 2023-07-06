@@ -29,7 +29,7 @@ public class RecipeConverter
             Description = recipe.Description,
             MainImagePath =
                 $"{_storagePath}/{recipe.Id}/{Storage.MAIN_IMAGE_FILENAME}{Storage.IMAGES_FORMAT}",
-            StepsImagesBase64 = imagePaths,
+            StepsImagesPaths = imagePaths,
             StepsTexts = recipe.StepsTexts
         };
     }
