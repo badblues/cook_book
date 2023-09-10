@@ -1,0 +1,6 @@
+.footer-container {
+  min-width: 100%;
+  height: fit-content;
+  min-height: 70px;
+  background: linear-gradient(to top, #c7c7c7, #ffffff);
+}
