@@ -1,11 +1,23 @@
+using CookBook.Domain;
+using CookBook.Persistence;
+using CookBook.WebApi.Extensions;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Configuration.AddJsonFile("appsettings.json", optional: false);
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+string? storagePath =
+    builder.Configuration.GetSection("Storage:StoragePath").Value
+    ?? throw new NullReferenceException("Storage path isn't configured");
+builder.Services.AddScoped<IRepository<Recipe>>(provider =>
+{
+    return new StorageRepository(storagePath);
+});
+builder.Services.AddScoped<RecipeConverter>(provider => new RecipeConverter(storagePath));
 
 var app = builder.Build();
 
@@ -15,6 +27,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
 app.UseHttpsRedirection();
 

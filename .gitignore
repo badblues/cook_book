@@ -1,0 +1,6 @@
+bin
+obj
+.vscode
+temporary_storage/
+recipe_storage
+.vs
