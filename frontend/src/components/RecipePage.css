@@ -1,0 +1,45 @@
+.recipe-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.name {
+  font-size: xx-large;
+  align-self: flex-start;
+  margin-left: 150px;
+}
+
+.preview-container {
+  display: flex;
+  margin: 20px 0px 10px 50px;
+
+}
+
+.preview-image {
+  width: 500px;
+  height: min-content;
+  margin-right: 10px;
+}
+
+.description {
+  width: 500px;
+  margin: 15px 0px 0px 10px;
+}
+
+.step-container {
+  display: flex;
+  margin: 20px 0px 20px 50px;
+  flex-direction: row;
+  justify-content: flex-start;
+}
+
+.step-image {
+  width: 400px;
+  height: min-content;
+  margin-right: 10px;
+}
+
+.step-description {
+  width: 700px;
+  margin: 10px 0px 0px 10px;
+}

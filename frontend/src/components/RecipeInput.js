@@ -1,4 +1,5 @@
 import React, { useContext, useState } from "react";
+import "./RecipeInput.css";
 import { useForm } from "react-hook-form";
 import { ApiContext } from "../contexts/ApiContext";
 
@@ -33,7 +34,11 @@ const RecipeInput = () => {
   };
 
   const addStep = () => {
-    setStepCounter(stepCounter + 1);
+    if (stepCounter <= 20) setStepCounter(stepCounter + 1);
+  };
+
+  const removeStep = () => {
+    if (stepCounter >= 2) setStepCounter(stepCounter - 1);
   };
 
   const toBase64 = (image) => {
@@ -54,52 +59,52 @@ const RecipeInput = () => {
       <div className="form-container">
         <div className="form-input-container">
           <label className="form-label" htmlFor="name">
-            Recipe name
+            NAME:
           </label>
           <input
             id="name"
-            className="form-input"
+            className="text-input"
             type="text"
             placeholder="Name..."
             autoComplete="off"
             {...register("name", {
-              required: "ERROR",
+              required: "Enter name of the recipe",
             })}
           />
-          <label className="form-text">{errors.name?.message}</label>
+          <label className="error-text">{errors.name?.message}</label>
         </div>
 
         <div className="form-input-container">
           <label className="form-label" htmlFor="description">
-            Recipe description
+            DESCRIPTION:
           </label>
           <input
             id="description"
-            className="form-input"
+            className="text-input"
             type="text"
             placeholder="Description..."
             autoComplete="off"
             {...register("description", {
-              required: "ERROR",
+              required: "Enter recipe description",
             })}
           />
-          <label className="form-text">{errors.description?.message}</label>
+          <label className="error-text">{errors.description?.message}</label>
         </div>
 
         <div className="form-input-container">
           <label className="form-label" htmlFor="main image">
-            main Image
+            PREVIEW:
           </label>
           <input
             id="mainImage"
-            className="form-input"
+            className="file-input"
             type="file"
             accept="image/jpg"
             {...register("mainImage", {
-              required: "ERROR",
+              required: "Choose preview image",
             })}
           />
-          <label className="form-text">{errors.mainImage?.message}</label>
+          <label className="error-text">{errors.mainImage?.message}</label>
         </div>
 
         <div>
@@ -107,18 +112,18 @@ const RecipeInput = () => {
             <>
               <div key={index} className="form-input-container">
                 <label className="form-label" htmlFor={`stepImage-${index}`}>
-                  stepImage {index + 1}
+                  #{index + 1} STEP IMAGE:
                 </label>
                 <input
                   id={`stepImage-${index}`}
-                  className="form-input"
+                  className="file-input"
                   type="file"
                   accept="image/jpg"
                   {...register(`stepsImages[${index}]`, {
-                    required: "ERROR",
+                    required: "Choose image for this step",
                   })}
                 />
-                <label className="form-text">
+                <label className="error-text">
                   {errors.stepsImages?.[index]?.message}
                 </label>
               </div>
@@ -127,19 +132,19 @@ const RecipeInput = () => {
                   className="form-label"
                   htmlFor={`stepDescription-${index}`}
                 >
-                  Step description {index + 1}
+                  #{index + 1} STEP DESCRIPTION:
                 </label>
                 <input
                   id={`stepDescription-${index}`}
-                  className="form-input"
+                  className="text-input"
                   type="text"
                   placeholder="Description..."
                   autoComplete="off"
                   {...register(`stepsDescriptions[${index}]`, {
-                    required: "ERROR",
+                    required: "Enter step description",
                   })}
                 />
-                <label className="form-text">
+                <label className="error-text">
                   {errors.stepsDescriptions?.[index]?.message}
                 </label>
               </div>
@@ -148,12 +153,23 @@ const RecipeInput = () => {
         </div>
 
         <div>
-          <button type="button" onClick={addStep}>
-            ADD STEP
-          </button>
+          {stepCounter >= 2 ? (
+            <button className="button" type="button" onClick={removeStep}>
+              REMOVE STEP
+            </button>
+          ) : null}
+          {stepCounter <= 20 ? (
+            <button className="button" type="button" onClick={addStep}>
+              ADD STEP
+            </button>
+          ) : null}
         </div>
 
-        <button disabled={loading} className="button form-button" type="submit">
+        <button
+          disabled={loading}
+          className="button submit-button"
+          type="submit"
+        >
           POST
         </button>
       </div>

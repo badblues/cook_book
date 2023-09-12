@@ -3,4 +3,16 @@
   height: fit-content;
   min-height: 70px;
   background: linear-gradient(to bottom, #c7c7c7, #ffffff);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.menu-option {
+  margin: 10px;
+  padding: 10px;
+}
+
+.menu-option:hover {
+  cursor: pointer;
 }

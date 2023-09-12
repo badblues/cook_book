@@ -1,6 +1,7 @@
 import "./App.css";
 import RecipeInput from "./components/RecipeInput";
 import Recipes from "./components/Recipes";
+import RecipePage from "./components/RecipePage";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { Routes, Route } from "react-router-dom";
@@ -13,6 +14,7 @@ function App() {
         <Routes>
           <Route element={<Recipes />} path="/" />
           <Route element={<RecipeInput />} path="/add-recipe" />
+          <Route element={<RecipePage />} path="/recipes/:id"/>
         </Routes>
       </div>
       <Footer />

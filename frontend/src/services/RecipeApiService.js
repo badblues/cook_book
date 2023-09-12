@@ -25,6 +25,16 @@ export default class RecipeApiService {
     } 
   }
 
+  async getRecipe(id) {
+    let url = this.apiUrl + `/${id}`;
+    try {
+      const response = await http.get(url);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
 
 
 }

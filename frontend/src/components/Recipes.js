@@ -1,4 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
+import "./Recipes.css";
 import { ApiContext } from "../contexts/ApiContext";
 import RecipeItem from "./RecipeItem";
 
@@ -9,11 +10,9 @@ const Recipes = () => {
   const { recipeApiService } = useContext(ApiContext);
 
   const fetchData = async () => {
-    setLoading(true);
     try {
       const recipes = await recipeApiService.getRecipes();
       setRecipes(recipes);
-      console.log(recipes);
       setLoading(false);
     } catch (error) {
       console.log(error);
@@ -29,7 +28,7 @@ const Recipes = () => {
   }
 
   return (
-    <div>
+    <div className="recipe-previews-container">
       {recipes.map((recipe) => (
         <RecipeItem recipe={recipe} />
       ))}

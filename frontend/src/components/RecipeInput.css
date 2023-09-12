@@ -1,0 +1,46 @@
+.form-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.form-input-container {
+  display: flex;
+  flex-direction: column;
+  margin: 5px 0px;
+  width: 300px;
+  height: fit-content;
+}
+
+.text-input {
+
+}
+
+.file-input::before {
+}
+
+.file-input:hover::before {
+  cursor: pointer;
+}
+
+.form-label {
+  margin-bottom: 3px;
+}
+
+.error-text {
+  color: red;
+}
+
+.button {
+  background-color: transparent;
+  border: none;
+  margin: 5px;
+}
+
+.button:hover {
+  cursor: pointer;
+}
+
+.submit-button {
+
+}

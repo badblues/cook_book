@@ -8,6 +8,7 @@ export class ApiContextProvider extends Component {
     super(props);
     this.state = {
       recipeApiService: new RecipeApiService(),
+      imagesApiUrl: "http://localhost:5055/images/",
     };
   }
 
