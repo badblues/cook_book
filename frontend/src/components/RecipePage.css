@@ -3,25 +3,25 @@
   flex-direction: column;
 }
 
-.name {
+.recipe-summary-name {
   font-size: xx-large;
   align-self: flex-start;
   margin-left: 150px;
 }
 
-.preview-container {
+.recipe-summary-container {
   display: flex;
   margin: 20px 0px 10px 50px;
 
 }
 
-.preview-image {
+.recipe-summary-image {
   width: 500px;
   height: min-content;
   margin-right: 10px;
 }
 
-.description {
+.recipe-summary-description {
   width: 500px;
   margin: 15px 0px 0px 10px;
 }

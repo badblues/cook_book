@@ -31,14 +31,14 @@ const RecipePage = () => {
 
   return (
     <div className="recipe-container">
-      <label className="name">{recipe.name}</label>
-      <div className="preview-container">
+      <p className="recipe-summary-name">{recipe.name}</p>
+      <div className="recipe-summary-container">
         <img
-          alt="Recipe preview"
-          className="preview-image"
+          alt="Recipe image"
+          className="recipe-summary-image"
           src={imagesApiUrl + recipe.mainImagePath}
         />
-        <label className="description">{recipe.description}</label>
+        <p className="recipe-summary-description">{recipe.description}</p>
       </div>
       {recipe.stepsImagesPaths.map((imagePath, index) => (
         <div className="step-container">
@@ -47,7 +47,7 @@ const RecipePage = () => {
             className="step-image"
             src={imagesApiUrl + imagePath}
           />
-          <label className="step-description">{recipe.stepsTexts[index]}</label>
+          <p className="step-description">{recipe.stepsTexts[index]}</p>
         </div>
       ))}
     </div>

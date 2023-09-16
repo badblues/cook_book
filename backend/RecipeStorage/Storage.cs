@@ -1,9 +1,11 @@
-﻿using CookBook.Domain;
-using CookBook.Exceptions;
-using System.Text;
+﻿using System.Text;
 using System.Text.RegularExpressions;
 
-namespace CookBook.RecipeStorage;
+using Domain;
+
+using Exceptions;
+
+namespace RecipeStorage;
 
 public class Storage
 {
@@ -21,14 +23,18 @@ public class Storage
     public void Create(Recipe recipe)
     {
         if (recipe.StepsImagesBase64.Count != recipe.StepsTexts.Count)
+        {
             throw new ArrayLengthsDontMatch();
+        }
 
         string directory = $"{_storagePath}/{recipe.Id}";
 
         if (Directory.Exists(directory))
+        {
             throw new EntryAlreadyExists();
+        }
 
-        Directory.CreateDirectory(directory);
+        _ = Directory.CreateDirectory(directory);
         SaveRecipeContents(directory, recipe);
     }
 
@@ -36,10 +42,7 @@ public class Storage
     {
         string directory = $"{_storagePath}/{id}";
 
-        if (!Directory.Exists(directory))
-            throw new EntryNotFound();
-
-        return LoadRecipe(id);
+        return !Directory.Exists(directory) ? throw new EntryNotFound() : LoadRecipe(id);
     }
 
     public IEnumerable<Recipe> GetAll()
@@ -64,7 +67,10 @@ public class Storage
     {
         string directory = $"{_storagePath}/{id}";
         if (!Directory.Exists(directory))
+        {
             throw new EntryNotFound();
+        }
+
         Directory.Delete(directory, true);
     }
 
@@ -166,7 +172,7 @@ public class Storage
         {
             using FileStream fileStream = File.OpenRead(filePath);
             byte[] bytes = new byte[fileStream.Length];
-            fileStream.Read(bytes, 0, (int)fileStream.Length);
+            _ = fileStream.Read(bytes, 0, (int)fileStream.Length);
             return Encoding.UTF8.GetString(bytes);
         }
         catch (FileNotFoundException)

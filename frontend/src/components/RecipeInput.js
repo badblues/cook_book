@@ -1,10 +1,10 @@
 import React, { useContext, useState } from "react";
 import "./RecipeInput.css";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { ApiContext } from "../contexts/ApiContext";
 
 const RecipeInput = () => {
-  const { register, handleSubmit, formState } = useForm();
+  const { register, control, handleSubmit, formState } = useForm();
   const { errors } = formState;
   const { recipeApiService } = useContext(ApiContext);
   const [loading, setLoading] = useState(false);
@@ -21,7 +21,6 @@ const RecipeInput = () => {
       stepsTexts: data.stepsDescriptions,
     };
     setLoading(true);
-    console.log(recipe);
     try {
       await recipeApiService
         .createRecipe(recipe)
@@ -58,9 +57,9 @@ const RecipeInput = () => {
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="form-container">
         <div className="form-input-container">
-          <label className="form-label" htmlFor="name">
+          <p className="form-label" htmlFor="name">
             NAME:
-          </label>
+          </p>
           <input
             id="name"
             className="text-input"
@@ -69,30 +68,37 @@ const RecipeInput = () => {
             autoComplete="off"
             {...register("name", {
               required: "Enter name of the recipe",
+              maxLength: 30,
             })}
           />
-          <label className="error-text">{errors.name?.message}</label>
+          <p className="error-text">{errors.name?.message}</p>
         </div>
 
         <div className="form-input-container">
           <label className="form-label" htmlFor="description">
             DESCRIPTION:
           </label>
-          <input
-            id="description"
-            className="text-input"
-            type="text"
-            placeholder="Description..."
-            autoComplete="off"
-            {...register("description", {
-              required: "Enter recipe description",
-            })}
+          <Controller
+            name="description"
+            control={control}
+            defaultValue=""
+            render={({ field }) => (
+              <div>
+                <textarea
+                  {...field}
+                  id="description"
+                  placeholder="Description..."
+                  maxLength={200}
+                />
+              </div>
+            )}
           />
-          <label className="error-text">{errors.description?.message}</label>
+
+          <p className="error-text">{errors.description?.message}</p>
         </div>
 
         <div className="form-input-container">
-          <label className="form-label" htmlFor="main image">
+          <label className="form-label" htmlFor="mainImage">
             PREVIEW:
           </label>
           <input
@@ -104,13 +110,13 @@ const RecipeInput = () => {
               required: "Choose preview image",
             })}
           />
-          <label className="error-text">{errors.mainImage?.message}</label>
+          <p className="error-text">{errors.mainImage?.message}</p>
         </div>
 
         <div>
           {Array.from({ length: stepCounter }).map((_, index) => (
-            <>
-              <div key={index} className="form-input-container">
+            <div key={index}>
+              <div className="form-input-container">
                 <label className="form-label" htmlFor={`stepImage-${index}`}>
                   #{index + 1} STEP IMAGE:
                 </label>
@@ -123,9 +129,9 @@ const RecipeInput = () => {
                     required: "Choose image for this step",
                   })}
                 />
-                <label className="error-text">
+                <p className="error-text">
                   {errors.stepsImages?.[index]?.message}
-                </label>
+                </p>
               </div>
               <div className="form-input-container">
                 <label
@@ -134,21 +140,24 @@ const RecipeInput = () => {
                 >
                   #{index + 1} STEP DESCRIPTION:
                 </label>
-                <input
-                  id={`stepDescription-${index}`}
-                  className="text-input"
-                  type="text"
-                  placeholder="Description..."
-                  autoComplete="off"
-                  {...register(`stepsDescriptions[${index}]`, {
-                    required: "Enter step description",
-                  })}
+                <Controller
+                  name={`stepsDescriptions[${index}]`}
+                  control={control}
+                  defaultValue=""
+                  render={({ field }) => (
+                    <textarea
+                      id={`stepDescription-${index}`}
+                      {...field}
+                      placeholder="Description..."
+                    />
+                  )}
                 />
-                <label className="error-text">
+
+                <p className="error-text">
                   {errors.stepsDescriptions?.[index]?.message}
-                </label>
+                </p>
               </div>
-            </>
+            </div>
           ))}
         </div>
 

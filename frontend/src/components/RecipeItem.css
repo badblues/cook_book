@@ -3,4 +3,25 @@
   flex-direction: column;
   margin: 10px;
   padding: 10px;
+  max-width: 400px;
+  height: 350px;
+}
+
+.recipe-preview:hover {
+  cursor: pointer;
+}
+
+.preview-image {
+  width: 100%;
+}
+
+.preview-name {
+  font-size: x-large;
+}
+
+.preview-description {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex-grow: 1;
 }

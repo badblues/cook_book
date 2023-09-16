@@ -1,4 +1,4 @@
-﻿namespace CookBook.Exceptions;
+﻿namespace Exceptions;
 
 public class EntryNotFound : Exception
 {

@@ -1,16 +1,18 @@
-using CookBook.Domain;
-using CookBook.WebApi.Dtos;
-using CookBook.RecipeStorage;
+using Domain;
 
-namespace CookBook.WebApi.Extensions;
+using RecipeStorage;
+
+using WebApi.Dtos;
+
+namespace WebApi.Extensions;
 
 public class RecipeConverter
 {
-    private string _storagePath;
+    private readonly string _storagePath;
 
     public RecipeConverter(string storagePath)
     {
-        this._storagePath = storagePath;
+        _storagePath = storagePath;
     }
 
     public RecipeDto ConvertImagesToUrls(Recipe recipe)

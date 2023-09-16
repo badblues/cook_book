@@ -15,13 +15,13 @@ const RecipeItem = (props) => {
 
   return (
     <div onClick={openRecipe} className="recipe-preview">
-      <label>{recipe.name}</label>
+      <p className="preview-name">{recipe.name}</p>
       <img
         alt="Recipe preview"
-        width="300px"
+        className="preview-image"
         src={imagesApiUrl + recipe.mainImagePath}
       />
-      <label>{recipe.description}</label>
+      <p className="preview-description">{recipe.description}</p>
     </div>
   );
 };

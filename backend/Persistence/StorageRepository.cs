@@ -1,11 +1,10 @@
-namespace CookBook.Persistence;
+using Domain;
+using RecipeStorage;
 
-using CookBook.Domain;
-using CookBook.RecipeStorage;
-
+namespace Persistence;
 public class StorageRepository : IRepository<Recipe>
 {
-    private Storage _storage;
+    private readonly Storage _storage;
 
     public StorageRepository(string storagePath)
     {

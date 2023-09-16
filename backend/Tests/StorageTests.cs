@@ -1,11 +1,11 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using CookBook.RecipeStorage;
-using CookBook.Domain;
-using CookBook.Exceptions;
-using SixLabors.ImageSharp;
 using System.Text;
 
-namespace CookBook.Tests;
+using Domain;
+using Exceptions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using RecipeStorage;
+
+namespace Tests;
 
 [TestClass]
 public class StorageTests
@@ -50,7 +50,7 @@ public class StorageTests
         Storage storage = new Storage(STORAGE_PATH);
 
         storage.Create(recipe);
-        Assert.ThrowsException<EntryAlreadyExists>(() => storage.Create(recipe));
+        _ = Assert.ThrowsException<EntryAlreadyExists>(() => storage.Create(recipe));
     }
 
     [TestMethod]
@@ -60,7 +60,7 @@ public class StorageTests
         recipe.StepsTexts.Add("qwe");
         Storage storage = new Storage(STORAGE_PATH);
 
-        Assert.ThrowsException<ArrayLengthsDontMatch>(() => storage.Create(recipe));
+        _ = Assert.ThrowsException<ArrayLengthsDontMatch>(() => storage.Create(recipe));
     }
 
     [TestMethod]
@@ -101,7 +101,7 @@ public class StorageTests
         Storage storage = new Storage(STORAGE_PATH);
         Guid id = new Guid();
 
-        Assert.ThrowsException<EntryNotFound>(() => storage.Get(id));
+        _ = Assert.ThrowsException<EntryNotFound>(() => storage.Get(id));
     }
 
     [TestMethod]
@@ -136,7 +136,7 @@ public class StorageTests
         Storage storage = new Storage(STORAGE_PATH);
         Guid id = new Guid();
 
-        Assert.ThrowsException<EntryNotFound>(() => storage.Delete(id));
+        _ = Assert.ThrowsException<EntryNotFound>(() => storage.Delete(id));
     }
 
     [TestMethod]
@@ -161,7 +161,7 @@ public class StorageTests
         Recipe recipe = new Recipe() { Id = new Guid() };
         Storage storage = new Storage(STORAGE_PATH);
 
-        Assert.ThrowsException<EntryNotFound>(() => storage.Update(recipe));
+        _ = Assert.ThrowsException<EntryNotFound>(() => storage.Update(recipe));
     }
 
     private Recipe CreateRecipe(string name, string description, string directory)
@@ -197,7 +197,7 @@ public class StorageTests
     {
         using FileStream fileStream = File.OpenRead(filePath);
         byte[] bytes = new byte[fileStream.Length];
-        fileStream.Read(bytes, 0, (int)fileStream.Length);
+        _ = fileStream.Read(bytes, 0, (int)fileStream.Length);
         return Encoding.UTF8.GetString(bytes);
     }
 }

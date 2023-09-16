@@ -1,4 +1,4 @@
-﻿namespace CookBook.Persistence;
+﻿namespace Persistence;
 
 public interface IRepository<T>
 {

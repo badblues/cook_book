@@ -1,4 +1,4 @@
-﻿namespace CookBook.Domain;
+﻿namespace Domain;
 
 public record Recipe
 {

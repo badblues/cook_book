@@ -1,8 +1,8 @@
-namespace CookBook.WebApi.Extensions;
+using Domain;
 
-using CookBook.Domain;
-using CookBook.WebApi.Dtos;
+using WebApi.Dtos;
 
+namespace WebApi.Extensions;
 public static class Extension
 {
 

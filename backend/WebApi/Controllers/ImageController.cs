@@ -1,8 +1,6 @@
-namespace CookBook.WebApi.Controllers;
-
 using Microsoft.AspNetCore.Mvc;
-using System.IO;
 
+namespace WebApi.Controllers;
 [ApiController]
 [Route("images")]
 public class ImageController : ControllerBase
@@ -18,7 +16,7 @@ public class ImageController : ControllerBase
         }
         try
         {
-            Byte[] bytes = System.IO.File.ReadAllBytes(path);
+            byte[] bytes = System.IO.File.ReadAllBytes(path);
             return File(bytes, "image/jpeg");
         }
         catch (FileNotFoundException)

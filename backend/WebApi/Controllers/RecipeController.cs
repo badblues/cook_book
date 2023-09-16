@@ -1,25 +1,29 @@
-namespace CookBook.WebApi.Controllers;
+using Domain;
+
+using Exceptions;
 
 using Microsoft.AspNetCore.Mvc;
-using CookBook.WebApi.Dtos;
-using CookBook.Persistence;
-using CookBook.Domain;
-using CookBook.WebApi.Extensions;
-using CookBook.Exceptions;
 
+using Persistence;
+using Serilog;
+using WebApi.Dtos;
+using WebApi.Extensions;
+
+namespace WebApi.Controllers;
 [ApiController]
 [Route("recipes")]
 public class RecipeController : ControllerBase
 {
-    private IRepository<Recipe> _repository;
-    private RecipeConverter _converter;
+    private readonly IRepository<Recipe> _repository;
+    private readonly RecipeConverter _converter;
+    private readonly Serilog.ILogger _logger = Log.ForContext<RecipeController>();
 
     public RecipeController(IRepository<Recipe> repository, RecipeConverter converter)
     {
-        this._repository = repository;
-        this._converter = converter;
+        _repository = repository;
+        _converter = converter;
     }
-    
+
     [HttpGet]
     public ActionResult<IEnumerable<RecipeDto>> GetRecipes()
     {
@@ -48,11 +52,13 @@ public class RecipeController : ControllerBase
         {
             Recipe recipe = inputRecipeDto.AsRecipe();
             recipe.Id = Guid.NewGuid();
+            _logger.Information($"Creating recipe, id:{recipe.Id}");
             _repository.Create(recipe);
             return Ok(_converter.ConvertImagesToUrls(recipe));
         }
         catch (EntryAlreadyExists err)
         {
+            _logger.Error(err.Message);
             return Conflict(err.Message);
         }
     }
@@ -64,11 +70,13 @@ public class RecipeController : ControllerBase
         {
             Recipe updatedRecipe = inputRecipeDto.AsRecipe();
             updatedRecipe.Id = id;
+            _logger.Information($"Updating recipe, id:{updatedRecipe.Id}");
             _repository.Update(updatedRecipe);
         }
-        catch (EntryNotFound)
+        catch (EntryNotFound err)
         {
-            return NotFound();
+            _logger.Error(err.Message);
+            return NotFound(err.Message);
         }
         return Ok();
     }
@@ -78,11 +86,13 @@ public class RecipeController : ControllerBase
     {
         try
         {
+            _logger.Information($"Deleting recipe, id:{id}");
             _repository.Delete(id);
         }
-        catch (EntryNotFound)
+        catch (EntryNotFound err)
         {
-            return NotFound();
+            _logger.Error(err.Message);
+            return NotFound(err.Message);
         }
         return Ok();
     }
