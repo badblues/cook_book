@@ -4,3 +4,4 @@ obj
 temporary_storage/
 recipe_storage
 .vs
+logs
