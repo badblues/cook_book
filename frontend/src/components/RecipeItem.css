@@ -3,8 +3,8 @@
   flex-direction: column;
   margin: 10px;
   padding: 10px;
-  max-width: 400px;
-  height: 350px;
+  width: 400px;
+  height: 400px;
 }
 
 .recipe-preview:hover {
@@ -13,13 +13,23 @@
 
 .preview-image {
   width: 100%;
+  height: 70%;
+  object-fit: cover;
+  border-radius: 10px;
 }
 
 .preview-name {
-  font-size: x-large;
+  margin: 5px;
+  font-size:xx-large;
+  color: var(--font-color);
+  font-family: var(--main-font);
+  align-self: center;
 }
 
 .preview-description {
+  margin: 5px;
+  color: var(--font-color);
+  font-family: var(--main-font);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

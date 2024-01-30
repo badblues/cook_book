@@ -15,7 +15,7 @@ const RecipeItem = (props) => {
 
   return (
     <div onClick={openRecipe} className="recipe-preview">
-      <p className="preview-name">{recipe.name}</p>
+      <h1 className="preview-name">{recipe.name}</h1>
       <img
         alt="Recipe preview"
         className="preview-image"

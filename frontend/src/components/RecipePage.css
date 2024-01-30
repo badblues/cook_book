@@ -1,45 +1,70 @@
 .recipe-container {
   display: flex;
   flex-direction: column;
+  width: 100%;
+}
+
+.recipe-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .recipe-summary-name {
   font-size: xx-large;
   align-self: flex-start;
-  margin-left: 150px;
+  margin-left: 15%;
+  font-family: var(--main-font);
+  color: var(--font-color);
 }
 
 .recipe-summary-container {
   display: flex;
-  margin: 20px 0px 10px 50px;
-
+  margin: 10px 30px;
 }
 
+
 .recipe-summary-image {
-  width: 500px;
+  width: 40%;
+  max-width: 400px;
   height: min-content;
   margin-right: 10px;
+  border-radius: 10px;
 }
 
 .recipe-summary-description {
-  width: 500px;
+  width: 50%;
+  max-width: 400px;
   margin: 15px 0px 0px 10px;
+  font-family: var(--main-font);
+}
+
+.buttons-panel {
+  width: 240px;
+  display: flex;
+  justify-content: space-between;
+  margin: 0px 20px 0px 0px;
 }
 
 .step-container {
   display: flex;
-  margin: 20px 0px 20px 50px;
+  margin: 20px 40px;
   flex-direction: row;
   justify-content: flex-start;
 }
 
 .step-image {
-  width: 400px;
+  width: 40%;
+  max-width: 400px;
   height: min-content;
   margin-right: 10px;
+  border-radius: 10px;
 }
 
 .step-description {
-  width: 700px;
+  width: 50%;
+  max-width: 400px;
   margin: 10px 0px 0px 10px;
+  font-family: var(--main-font);
+  color: var(--font-color);
 }

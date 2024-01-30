@@ -1,19 +1,43 @@
 .form-container {
   display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.form {
+  width: fit-content;
+  display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
 }
 
 .form-input-container {
   display: flex;
   flex-direction: column;
   margin: 5px 0px;
-  width: 300px;
   height: fit-content;
 }
 
+.name-input {
+  border-width: 1px;;
+  border-radius: 3px;
+  width: 400px;
+  background-color: #f7ede2;
+  font-family: var(--main-font);
+  color: var(--font-color);
+  font-size: medium;
+}
+
 .text-input {
-  
+  border-width: 1px;;
+  border-radius: 3px;
+  resize: none;
+  background-color: #f7ede2;
+  height: 150px;
+  width: 400px;
+  font-family: var(--main-font);
+  color: var(--font-color);
+  font-size: medium;
 }
 
 .file-input::before {
@@ -25,22 +49,21 @@
 
 .form-label {
   margin-bottom: 3px;
+  font-family: var(--main-font);
+  color: var(--font-color);
 }
 
 .error-text {
   color: red;
+  font-family: var(--main-font);
 }
 
-.button {
-  background-color: transparent;
-  border: none;
-  margin: 5px;
-}
-
-.button:hover {
-  cursor: pointer;
+.buttons-container {
+  align-self: center;
+  display: flex;
+  flex-direction: column;
 }
 
 .submit-button {
-
+  margin-top: 5px;
 }

@@ -8,7 +8,6 @@ export default class RecipeApiService {
     let url = this.apiUrl;
     try {
       const response = await http.get(url);
-      console.log(response);
       return response.data;
     } catch(error) {
       throw error;
@@ -31,6 +30,16 @@ export default class RecipeApiService {
       const response = await http.get(url);
       return response.data;
     } catch (error) {
+      throw error;
+    }
+  }
+
+  async removeRecipe(id) {
+    let url = this.apiUrl + `/${id}`;
+    try {
+      await http.delete(url);
+    }
+    catch (error) {
       throw error;
     }
   }

@@ -54,135 +54,140 @@ const RecipeInput = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <div className="form-container">
-        <div className="form-input-container">
-          <p className="form-label" htmlFor="name">
-            NAME:
-          </p>
-          <input
-            id="name"
-            className="text-input"
-            type="text"
-            placeholder="Name..."
-            autoComplete="off"
-            {...register("name", {
-              required: "Enter name of the recipe",
-              maxLength: 30,
-            })}
-          />
-          <p className="error-text">{errors.name?.message}</p>
-        </div>
+    <div className="form-container">
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <div className="form">
+          <div className="form-input-container">
+            <p className="form-label" htmlFor="name">
+              NAME:
+            </p>
+            <input
+              id="name"
+              className="name-input"
+              type="text"
+              placeholder="Name..."
+              autoComplete="off"
+              maxLength={50}
+              {...register("name", {
+                required: "Enter name of the recipe"
+              })}
+            />
+            <p className="error-text">{errors.name?.message}</p>
+          </div>
 
-        <div className="form-input-container">
-          <label className="form-label" htmlFor="description">
-            DESCRIPTION:
-          </label>
-          <Controller
-            name="description"
-            control={control}
-            defaultValue=""
-            render={({ field }) => (
-              <div>
-                <textarea
-                  {...field}
-                  id="description"
-                  placeholder="Description..."
-                  maxLength={200}
-                />
+          <div className="form-input-container">
+            <label className="form-label" htmlFor="description">
+              DESCRIPTION:
+            </label>
+            <Controller
+              name="description"
+              control={control}
+              defaultValue=""
+              render={({ field }) => (
+                <div>
+                  <textarea
+                    {...field}
+                    id="description"
+                    className="text-input"
+                    placeholder="Description..."
+                    maxLength={400}
+                  />
+                </div>
+              )}
+            />
+
+            <p className="error-text">{errors.description?.message}</p>
+          </div>
+
+          <div className="form-input-container">
+            <label className="form-label" htmlFor="mainImage">
+              PREVIEW:
+            </label>
+            <input
+              id="mainImage"
+              className="file-input"
+              type="file"
+              accept=".jpg"
+              {...register("mainImage", {
+                required: "Choose preview image",
+              })}
+            />
+            <p className="error-text">{errors.mainImage?.message}</p>
+          </div>
+
+          <div>
+            {Array.from({ length: stepCounter }).map((_, index) => (
+              <div key={index}>
+                <div className="form-input-container">
+                  <label className="form-label" htmlFor={`stepImage-${index}`}>
+                    STEP {index + 1} IMAGE:
+                  </label>
+                  <input
+                    id={`stepImage-${index}`}
+                    className="file-input"
+                    type="file"
+                    accept="image/jpg"
+                    {...register(`stepsImages[${index}]`, {
+                      required: "Choose image for this step",
+                    })}
+                  />
+                  <p className="error-text">
+                    {errors.stepsImages?.[index]?.message}
+                  </p>
+                </div>
+                <div className="form-input-container">
+                  <label
+                    className="form-label"
+                    htmlFor={`stepDescription-${index}`}
+                  >
+                    STEP {index + 1} DESCRIPTION:
+                  </label>
+                  <Controller
+                    name={`stepsDescriptions[${index}]`}
+                    control={control}
+                    defaultValue=""
+                    render={({ field }) => (
+                      <textarea
+                        {...field}
+                        id={`stepDescription-${index}`}
+                        className="text-input"
+                        placeholder="Description..."
+                        maxLength={400}
+                      />
+                    )}
+                  />
+
+                  <p className="error-text">
+                    {errors.stepsDescriptions?.[index]?.message}
+                  </p>
+                </div>
               </div>
-            )}
-          />
+            ))}
+          </div>
 
-          <p className="error-text">{errors.description?.message}</p>
-        </div>
-
-        <div className="form-input-container">
-          <label className="form-label" htmlFor="mainImage">
-            PREVIEW:
-          </label>
-          <input
-            id="mainImage"
-            className="file-input"
-            type="file"
-            accept="image/jpg"
-            {...register("mainImage", {
-              required: "Choose preview image",
-            })}
-          />
-          <p className="error-text">{errors.mainImage?.message}</p>
-        </div>
-
-        <div>
-          {Array.from({ length: stepCounter }).map((_, index) => (
-            <div key={index}>
-              <div className="form-input-container">
-                <label className="form-label" htmlFor={`stepImage-${index}`}>
-                  #{index + 1} STEP IMAGE:
-                </label>
-                <input
-                  id={`stepImage-${index}`}
-                  className="file-input"
-                  type="file"
-                  accept="image/jpg"
-                  {...register(`stepsImages[${index}]`, {
-                    required: "Choose image for this step",
-                  })}
-                />
-                <p className="error-text">
-                  {errors.stepsImages?.[index]?.message}
-                </p>
-              </div>
-              <div className="form-input-container">
-                <label
-                  className="form-label"
-                  htmlFor={`stepDescription-${index}`}
-                >
-                  #{index + 1} STEP DESCRIPTION:
-                </label>
-                <Controller
-                  name={`stepsDescriptions[${index}]`}
-                  control={control}
-                  defaultValue=""
-                  render={({ field }) => (
-                    <textarea
-                      id={`stepDescription-${index}`}
-                      {...field}
-                      placeholder="Description..."
-                    />
-                  )}
-                />
-
-                <p className="error-text">
-                  {errors.stepsDescriptions?.[index]?.message}
-                </p>
-              </div>
+          <div className="buttons-container">
+            <div>
+              {stepCounter >= 2 ? (
+                <button className="default-button" type="button" onClick={removeStep}>
+                  REMOVE STEP
+                </button>
+              ) : null}
+              {stepCounter <= 20 ? (
+                <button className="default-button" type="button" onClick={addStep}>
+                  ADD STEP
+                </button>
+              ) : null}
             </div>
-          ))}
-        </div>
-
-        <div>
-          {stepCounter >= 2 ? (
-            <button className="button" type="button" onClick={removeStep}>
-              REMOVE STEP
+            <button
+              disabled={loading}
+              className="default-button submit-button"
+              type="submit">
+              POST
             </button>
-          ) : null}
-          {stepCounter <= 20 ? (
-            <button className="button" type="button" onClick={addStep}>
-              ADD STEP
-            </button>
-          ) : null}
+          </div>
         </div>
-
-        <button
-          disabled={loading}
-          className="button submit-button"
-          type="submit"
-        >
-          POST
-        </button>
-      </div>
-    </form>
+      </form>
+    </div>
   );
 };
 

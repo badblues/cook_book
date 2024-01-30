@@ -7,22 +7,24 @@ const Header = () => {
 
   return (
     <div className="header-container">
-      <label
-        className="menu-option"
-        onClick={() => {
-          navigate("/");
-        }}
-      >
-        COOK BOOK
-      </label>
-      <label
-        className="menu-option"
-        onClick={() => {
-          navigate("/add-recipe");
-        }}
-      >
-        ADD RECIPE
-      </label>
+      <div className="menu-container">
+        <label
+          className="menu-option"
+          onClick={() => {
+            navigate("/");
+          }}
+        >
+          COOK BOOK
+        </label>
+        <label
+          className="menu-option"
+          onClick={() => {
+            navigate("/add-recipe");
+          }}
+        >
+          ADD RECIPE
+        </label>
+      </div>
     </div>
   );
 };

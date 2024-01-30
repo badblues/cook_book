@@ -1,15 +1,17 @@
 import React, { useEffect, useState, useContext } from "react";
-import "./RecipePage.css";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { ApiContext } from "../contexts/ApiContext";
+import "./RecipePage.css";
 
 const RecipePage = () => {
   const { id } = useParams();
 
   const [recipe, setRecipe] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   const { recipeApiService, imagesApiUrl } = useContext(ApiContext);
+  const navigate = useNavigate();
 
   const fetchData = async () => {
     try {
@@ -17,6 +19,9 @@ const RecipePage = () => {
       setRecipe(recipe);
       setLoading(false);
     } catch (error) {
+      if (error.response?.status === 400 || error.response?.status === 404) {
+        setError(true);
+      }
       console.log(error);
     }
   };
@@ -25,13 +30,35 @@ const RecipePage = () => {
     fetchData();
   }, []);
 
+  const removeRecipe = async () => {
+    await recipeApiService.removeRecipe(id);
+    navigate("/");
+  };
+
+  if (error) {
+    return <div>RECIPE NOT FOUND</div>
+  }
+
   if (loading) {
     return <div>LOADING</div>;
   }
 
   return (
     <div className="recipe-container">
-      <p className="recipe-summary-name">{recipe.name}</p>
+      <div className="recipe-header">
+        <h1 className="recipe-summary-name">{recipe.name}</h1>
+        <div className="buttons-panel">
+        <button
+            className="default-button">
+            FOO
+          </button>
+          <button
+            className="default-button"
+            onClick={removeRecipe}>
+            REMOVE RECIPE
+          </button>
+        </div>
+      </div>
       <div className="recipe-summary-container">
         <img
           alt="Recipe image"
