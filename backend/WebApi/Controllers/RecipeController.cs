@@ -1,9 +1,6 @@
 using Domain;
-
 using Exceptions;
-
 using Microsoft.AspNetCore.Mvc;
-
 using Persistence;
 using Serilog;
 using WebApi.Dtos;
