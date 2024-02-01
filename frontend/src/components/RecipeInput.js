@@ -2,8 +2,11 @@ import React, { useContext, useState } from "react";
 import "./RecipeInput.css";
 import { useForm, Controller } from "react-hook-form";
 import { ApiContext } from "../contexts/ApiContext";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const RecipeInput = () => {
+  const navigate = useNavigate();
   const { register, control, handleSubmit, formState } = useForm();
   const { errors } = formState;
   const { recipeApiService } = useContext(ApiContext);
@@ -24,9 +27,10 @@ const RecipeInput = () => {
     try {
       await recipeApiService
         .createRecipe(recipe)
-        .then((response) => alert(`Success, ${response.name} created`));
+        .then((response) => toast.success(`${response.name} recipe added`));
+      navigate("/");
     } catch (error) {
-      alert(error?.error);
+      toast.error(error?.error);
     } finally {
       setLoading(false);
     }

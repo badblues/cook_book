@@ -2,6 +2,7 @@ import React, { useState, useContext, useEffect } from "react";
 import "./Recipes.css";
 import { ApiContext } from "../contexts/ApiContext";
 import RecipeItem from "./RecipeItem";
+import FakeRecipeItem from "./FakeRecipeItem";
 
 const Recipes = () => {
   const [recipes, setRecipes] = useState([]);
@@ -24,7 +25,16 @@ const Recipes = () => {
   }, []);
 
   if (loading) {
-    return <div>LOADING</div>;
+    return(
+    <div className="recipe-previews-container">
+      <FakeRecipeItem />
+      <FakeRecipeItem />
+      <FakeRecipeItem />
+      <FakeRecipeItem />
+      <FakeRecipeItem />
+      <FakeRecipeItem />
+    </div>
+    );
   }
 
   return (

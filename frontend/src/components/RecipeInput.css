@@ -40,9 +40,6 @@
   font-size: medium;
 }
 
-.file-input::before {
-}
-
 .file-input:hover::before {
   cursor: pointer;
 }

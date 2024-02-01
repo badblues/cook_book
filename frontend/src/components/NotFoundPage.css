@@ -1,0 +1,15 @@
+.not-found {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 500px;
+}
+
+.not-found-title {
+  font-family: var(--second-font);
+}
+
+.not-found-description {
+  font-family: var(--second-font);
+}

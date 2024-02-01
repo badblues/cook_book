@@ -2,14 +2,12 @@ import React, { useEffect, useState, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ApiContext } from "../contexts/ApiContext";
 import "./RecipePage.css";
+import { toast } from "react-toastify";
 
 const RecipePage = () => {
   const { id } = useParams();
-
   const [recipe, setRecipe] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-
   const { recipeApiService, imagesApiUrl } = useContext(ApiContext);
   const navigate = useNavigate();
 
@@ -20,7 +18,7 @@ const RecipePage = () => {
       setLoading(false);
     } catch (error) {
       if (error.response?.status === 400 || error.response?.status === 404) {
-        setError(true);
+        navigate("/not-found");
       }
       console.log(error);
     }
@@ -32,12 +30,9 @@ const RecipePage = () => {
 
   const removeRecipe = async () => {
     await recipeApiService.removeRecipe(id);
+    toast.success(`Recipe deleted`);
     navigate("/");
   };
-
-  if (error) {
-    return <div>RECIPE NOT FOUND</div>
-  }
 
   if (loading) {
     return <div>LOADING</div>;
@@ -48,10 +43,6 @@ const RecipePage = () => {
       <div className="recipe-header">
         <h1 className="recipe-summary-name">{recipe.name}</h1>
         <div className="buttons-panel">
-        <button
-            className="default-button">
-            FOO
-          </button>
           <button
             className="default-button"
             onClick={removeRecipe}>

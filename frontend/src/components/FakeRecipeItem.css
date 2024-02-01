@@ -1,0 +1,32 @@
+.fake-recipe-preview {
+  display: flex;
+  flex-direction: column;
+  margin: 10px;
+  padding: 10px;
+  width: 400px;
+  height: 400px;
+}
+
+.fake-preview-image {
+  width: 400px;
+  height: 248px;
+  background-color: #ffe8e8;
+  border-radius: 10px;
+  filter: blur(5px);
+}
+
+.fake-preview-name {
+  height: 40px;
+  margin: 5px;
+  background-color: #ffe8e8;
+  border-radius: 10px;
+  filter: blur(5px);
+}
+
+.fake-preview-description {
+  height: 112px;
+  margin: 5px;
+  background-color: #ffe8e8;
+  border-radius: 10px;
+  filter: blur(5px);
+}
